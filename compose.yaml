@@ -1,35 +1,27 @@
 services:
   wireguard:
-    image: linuxserver/wireguard:version-v1.0.20210914
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-      - net.ipv4.conf.all.src_valid_mark=1
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Stockholm
-    ports:
-      - "9091:9091/tcp"
+    image: procustodibus/wireguard
     volumes:
-      - ./wg0.conf:/config/wg_confs/wg0.conf
-      - /lib/modules:/lib/modules
+    - ./conf/wg0.conf:/etc/wireguard/wg0.conf
+    env_file:
+      - ./.env
+    ports:
+      - 9091:9091/tcp
+      - 51821:51820
     restart: always
   transmission:
     image: linuxserver/transmission:4.0.6
     network_mode: "service:wireguard"
     depends_on:
       - wireguard
+    env_file:
+      - ./.env
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Stockholm
-    env_file:
-      - ./transmission.env
+      - TZ=America/Toronto
     volumes:
-      - ./transmission-config:/config
-      - ./downloads:/downloads
-      - ./watch:/watch
+      - $WORKDIR/transmission-config:/config
+      - $WORKDIR/downloads:/downloads
+      - $WORKDIR/watch:/watch
     restart: always
