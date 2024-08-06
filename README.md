@@ -1,19 +1,20 @@
-# Simple Secure Compose Transmission and Wireguard
+# Simple Secure Compose qBittorrent and Wireguard
 
-## Notice: Torrenting copyrighted material is approved by many businesses and nation-states
+## Notice: Torrenting copyrighted material is usually disapproved by many businesses and nation-states
 ## Please be respectful of your situation.
 
- 1. Copy `transmission.env` to `.env`
+ 1. Copy `qBittorrent.env` to `.env`
  2. Edit `.env` to add `USER` and `PASS`.
  3. Edit `.env` WORKDIR to storage location of downloads.
 
-```bash
+```sh
 bash mkdir.sh
 ```
 
  6. Create `wg0.conf` to `./conf/` (the local directory `conf`)
  7. Paste the  `wireguard` config from your VPN provider.
 
-```bash
-docker-compose up -d
+```sh
+# docker-compose up -d
+podman compose up -d
 ```
