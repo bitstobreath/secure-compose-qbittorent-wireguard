@@ -5,23 +5,43 @@ services:
     - ./conf/wg0.conf:/etc/wireguard/wg0.conf
     env_file:
       - ./.env
-    ports:
-      - 9091:9091/tcp
-      - 51821:51820
-    restart: always
-  transmission:
-    image: linuxserver/transmission:4.0.6
-    network_mode: "service:wireguard"
-    depends_on:
-      - wireguard
-    env_file:
-      - ./.env
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Toronto
-    volumes:
-      - $WORKDIR/transmission-config:/config
-      - $WORKDIR/downloads:/downloads
-      - $WORKDIR/watch:/watch
+    ports:
+      - 9091:9091/tcp
+      - 51821:51820
+      # for WebUI
+      - ${QBT_WEBUI_PORT}:${QBT_WEBUI_PORT}/tcp
     restart: always
+  qbittorrent-nox:
+    depends_on:
+      - wireguard
+    restart: always
+    ports:
+    # # for bittorrent traffic
+      - 6881:6881/tcp
+      - 6881:6881/udp
+    network_mode: service:wireguard
+    # for debugging
+    #cap_add:
+      #- SYS_PTRACE
+    container_name: qbittorrent-nox
+    environment:
+       - PGID=1000
+       - PUID=1000
+       - QBT_EULA=${QBT_EULA}
+       - QBT_VERSION=${QBT_VERSION}
+       - QBT_WEBUI_PORT=${QBT_WEBUI_PORT}
+       - TZ=America/Toronto
+      #- UMASK=022
+    image: qbittorrentofficial/qbittorrent-nox:${QBT_VERSION}
+    read_only: true
+    stop_grace_period: 30m
+    tmpfs:
+      - /tmp
+    tty: true
+    volumes:
+      - ${QBT_CONFIG_PATH}:/config
+      - ${QBT_DOWNLOADS_PATH}:/downloads
