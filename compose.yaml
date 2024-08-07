@@ -8,6 +8,11 @@ services:
     ports:
       - 9091:9091/tcp
       - 51821:51820
+      # for bittorrent traffic
+      - 6881:6881/tcp
+      - 6881:6881/udp
+      # for WebUI
+      - ${QBT_WEBUI_PORT}:${QBT_WEBUI_PORT}/tcp
     restart: always
   qbittorrent-nox:
     depends_on:
@@ -27,12 +32,6 @@ services:
       #- TZ=UTC
       #- UMASK=022
     image: qbittorrentofficial/qbittorrent-nox:${QBT_VERSION}
-    ports:
-      # for bittorrent traffic
-      - 6881:6881/tcp
-      - 6881:6881/udp
-      # for WebUI
-      - ${QBT_WEBUI_PORT}:${QBT_WEBUI_PORT}/tcp
     read_only: true
     stop_grace_period: 30m
     tmpfs:
